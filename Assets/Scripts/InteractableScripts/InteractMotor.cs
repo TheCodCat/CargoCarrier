@@ -10,29 +10,29 @@ public class InteractMotor : MonoBehaviour
     [SerializeField] private LayerMask _layerInteract;
     [SerializeField] private LayerMask _layerMask;
 
-    [SerializeField] private IGrap _grap;
+     private IGrap _grap;
 
     private ISelectable _currentSelect;
 
-    /*void Update()
+    void Update()
     {
         Ray ray = new Ray(_pointInteract.transform.position, _pointInteract.transform.forward);
 
         Debug.DrawRay(_pointInteract.transform.position, _pointInteract.transform.forward * _distance, Color.blue);
         if (Physics.Raycast(ray, out RaycastHit hitInfo, _distance, _layerMask))
         {
-            Debug.Log(hitInfo.collider.name);
+            //Debug.Log(hitInfo.collider.name);
             if (hitInfo.collider.TryGetComponent(out ISelectable selectable))
             {
-                if (!selectable.Equals(_currentSelect))
-                {
-                    _currentSelect = selectable;
-                    selectable.Select();
-                }
-                else
+                _currentSelect = selectable;
+                selectable.Select();
+            }
+            else
+            {
+                if (_currentSelect is not null)
                 {
                     Debug.LogError("Деселект");
-                    _currentSelect.DeSelect();
+                    _currentSelect?.DeSelect();
                     _currentSelect = null;
                 }
             }
@@ -40,12 +40,15 @@ public class InteractMotor : MonoBehaviour
         else
         {
             Debug.LogError("Деселект");
-            _currentSelect?.DeSelect();
-            _currentSelect = null;
+            if(_currentSelect is not null)
+            {
+                _currentSelect?.DeSelect();
+                _currentSelect = null;
+            }
         }
-    }*/
+    }
 
-    public void PutInteract(InputAction.CallbackContext callback)
+    public void GrapInteract(InputAction.CallbackContext callback)
     {
         if (!callback.performed) return;
 
@@ -62,8 +65,25 @@ public class InteractMotor : MonoBehaviour
             }
         }
     }
-    public void GrapInteract(InputAction.CallbackContext callback)
+    public void PutInteract(InputAction.CallbackContext callback)
     {
         if (!callback.performed) return;
+
+        Ray ray = new Ray(_pointInteract.transform.position, _pointInteract.transform.forward);
+
+        Debug.DrawRay(_pointInteract.transform.position, _pointInteract.transform.forward * _distance, Color.blue);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, _distance, _layerInteract))
+        {
+            if (hitInfo.collider.TryGetComponent(out IPuten puten))
+            {
+                if(_grap is not null)
+                {
+                    puten.Put(_grap);
+                    _grap?.Grap();
+                    _grap = null;
+                }
+            }
+        }
     }
 }

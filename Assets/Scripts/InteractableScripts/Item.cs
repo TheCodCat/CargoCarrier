@@ -8,9 +8,13 @@ public class Item : MonoBehaviour, ISelectable, IGrap
     [SerializeField] private Material _baseMaterial;
     [SerializeField] private Material _selectableMaterial;
     [SerializeField] private Collider _collider;
+    [SerializeField] private bool _isGrap;
+    [SerializeField] private bool _isPut = true;
     public void Select()
     {
         //Debug.Log("ί βϋδελÿώρό");
+        if (_isPut) return;
+
         _renderer.material = _selectableMaterial;
     }
 
@@ -22,7 +26,23 @@ public class Item : MonoBehaviour, ISelectable, IGrap
 
     public void Grap()
     {
-        _collider.enabled = false;
-        _renderer.enabled = false;
+        if (!_isPut)
+        {
+            _isGrap = true;
+            _collider.enabled = false;
+            _renderer.enabled = false;
+        }
+        else
+        {
+            _isGrap = false;
+            _collider.enabled = true;
+            _renderer.enabled = true;
+        }
+    }
+
+    public void Put(Vector3 vector3)
+    {
+        gameObject.transform.position = vector3;
+        _isPut = true;
     }
 }

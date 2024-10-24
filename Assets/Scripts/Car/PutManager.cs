@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class PutManager : MonoBehaviour, ISelectable, IPuten
@@ -7,21 +8,7 @@ public class PutManager : MonoBehaviour, ISelectable, IPuten
     [SerializeField] private MeshRenderer _renderer;
     [SerializeField] private Material _baseMaterial;
     [SerializeField] private Material _selectableMaterial;
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if(other.TryGetComponent(out PlayerMotor player))
-        {
-            Select();
-        }
-    }
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.TryGetComponent(out PlayerMotor player))
-        {
-            DeSelect();
-        }
-    }
+    [SerializeField] private PutPoint[] _putPoints;
 
     public void Select()
     {
@@ -37,7 +24,17 @@ public class PutManager : MonoBehaviour, ISelectable, IPuten
 
     public void Put(IGrap grap)
     {
-        Debug.Log(grap);
+        PutPoint freePosition = _putPoints.FirstOrDefault(x => x.IsFree);
+        Debug.Log(freePosition);
+        freePosition.IsFree = false;
+        grap.Put(freePosition.PutPosition.position);
     }
 
+}
+[System.Serializable]
+public class PutPoint
+{
+    public bool IsFree = true;
+    public Transform PutPosition;
+    public IGrap Grap;
 }
