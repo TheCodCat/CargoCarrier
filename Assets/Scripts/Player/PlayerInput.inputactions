@@ -112,6 +112,12 @@
                     "isPartOfComposite": false
                 }
             ]
+        },
+        {
+            "name": "Timeline",
+            "id": "c5fd594a-26b9-43c0-8501-c47170ca5b4b",
+            "actions": [],
+            "bindings": []
         }
     ],
     "controlSchemes": []

@@ -1,20 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.InputSystem;
 
 public class InteractMotor : MonoBehaviour
 {
+    //Может пригодится
+    public static event UnityAction OnGrap;
+
     [SerializeField] private float _distance;
     [SerializeField] private Transform _pointInteract;
     [SerializeField] private LayerMask _layerInteract;
     [SerializeField] private LayerMask _layerMask;
 
-     private IGrap _grap;
+    private IGrap _grap;
+    public IGrap Grap 
+    {
+        get 
+        {
+            return _grap;
+        }
+        set 
+        {
+            _grap = value;
+            OnGrap?.Invoke();
+        } 
+    }
 
     private ISelectable _currentSelect;
 
-    void Update()
+    void LateUpdate()
     {
         Ray ray = new Ray(_pointInteract.transform.position, _pointInteract.transform.forward);
 
@@ -31,7 +47,7 @@ public class InteractMotor : MonoBehaviour
             {
                 if (_currentSelect is not null)
                 {
-                    Debug.LogError("Деселект");
+                    //Debug.LogError("Деселект");
                     _currentSelect?.DeSelect();
                     _currentSelect = null;
                 }
@@ -39,7 +55,7 @@ public class InteractMotor : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Деселект");
+            //Debug.LogError("Деселект");
             if(_currentSelect is not null)
             {
                 _currentSelect?.DeSelect();
@@ -60,8 +76,10 @@ public class InteractMotor : MonoBehaviour
         {
             if(hitInfo.collider.TryGetComponent(out IGrap grap))
             {
-                _grap = grap;
-                _grap.Grap();
+                if (Grap is not null) return;
+
+                Grap = grap;
+                Grap.Grap();
             }
         }
     }
@@ -79,9 +97,9 @@ public class InteractMotor : MonoBehaviour
             {
                 if(_grap is not null)
                 {
-                    puten.Put(_grap);
-                    _grap?.Grap();
-                    _grap = null;
+                    puten.Put(Grap);
+                    Grap?.Grap();
+                    Grap = null;
                 }
             }
         }

@@ -25,6 +25,8 @@ public class PutManager : MonoBehaviour, ISelectable, IPuten
     public void Put(IGrap grap)
     {
         PutPoint freePosition = _putPoints.FirstOrDefault(x => x.IsFree);
+        if (freePosition is null) return;
+
         Debug.Log(freePosition);
         freePosition.IsFree = false;
         grap.Put(freePosition.PutPosition.position);
